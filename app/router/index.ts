@@ -3,6 +3,8 @@ import UserController from '../controller/userController'
 
 const router = new Router()
 
+Object.keys(new UserController())
+
 router.get('/user', new UserController().getUserInfo)
 
  

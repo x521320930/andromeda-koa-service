@@ -1,4 +1,6 @@
-import { Sequelize } from 'sequelize'
+import { Sequelize, Model } from 'sequelize'
+import * as path from 'path'
+import * as fs from 'fs'
 
 const sequelize = new Sequelize({
   host: process.env.DB_HOST,
@@ -6,9 +8,11 @@ const sequelize = new Sequelize({
   timezone: process.env.DB_TIMEZONE,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  database: process.env.DATABASE,
-  dialect: 'mysql'
+  database: process.env.DB_DATABASE,
+  dialect: 'mysql',
+  pool: { max: 5, min: 0, idle: 10000 }
 })
+
 sequelize
   .authenticate()
   .then((res: any) => {
@@ -19,4 +23,16 @@ sequelize
     console.error(`数据库连接失败: \n ${err.message}`)
   })
 
-export default sequelize
+const db: { [key: string]: any } = {}
+
+fs.readdirSync(`${__dirname}/modules`).forEach((file) => {
+  const model = sequelize.import(path.join(__dirname, `/modules/${file}`))
+  db[model.name] = model
+
+  if (db[model.name].associate) {
+    db[model.name].associate(db);
+  }
+})
+
+
+export default db

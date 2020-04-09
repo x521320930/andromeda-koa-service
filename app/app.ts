@@ -1,8 +1,17 @@
 import * as Koa from 'koa'
 import router from './router/index'
 import './config/env'
-import './db/index'
+import db from  './db/index'
+import { Sequelize, Model } from 'sequelize/types'
 const app = new Koa()
+
+
+
+app.use(async (ctx: Koa.Context, next: Koa.Next) => {
+  ctx.state.db = db
+  await next()
+})
+
 /*
  * 启动路由
  */
