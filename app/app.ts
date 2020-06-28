@@ -2,13 +2,15 @@ import * as Koa from 'koa'
 import router from './router/index'
 import './config/env'
 import db from  './db/index'
-import { Sequelize, Model } from 'sequelize/types'
+import * as cors from 'koa2-cors'
 const app = new Koa()
 
 
+// 解决跨域问题
+app.use(cors)
 
 app.use(async (ctx: Koa.Context, next: Koa.Next) => {
-  ctx.state.db = db
+  if (!ctx.db) ctx.db = db
   await next()
 })
 

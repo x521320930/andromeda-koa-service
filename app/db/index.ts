@@ -1,4 +1,4 @@
-import { Sequelize, Model } from 'sequelize'
+import { Sequelize } from 'sequelize'
 import * as path from 'path'
 import * as fs from 'fs'
 
@@ -28,10 +28,7 @@ const db: { [key: string]: any } = {}
 fs.readdirSync(`${__dirname}/modules`).forEach((file) => {
   const model = sequelize.import(path.join(__dirname, `/modules/${file}`))
   db[model.name] = model
-
-  if (db[model.name].associate) {
-    db[model.name].associate(db);
-  }
+  if (db[model.name].associate) db[model.name].associate(db);
 })
 
 
